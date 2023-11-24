@@ -32,9 +32,9 @@ public class FlashcardController : Controller
     }
 
     [HttpGet("bydeck/{id}")]
-    public async Task<IActionResult> GetAllByDeckId(int deckId)
+    public async Task<IActionResult> GetAllByDeckId(int id)
     {
-        var Flashcards = await _flashcardRepository.GetFlashcardsByDeckId(deckId);
+        var Flashcards = await _flashcardRepository.GetFlashcardsByDeckId(id);
         if (Flashcards == null)
         {
             _logger.LogError("[FlashcardController] Flashcard list not found while executing _FlashcardRepository.GetFlashcardsByDeckId().");
@@ -46,27 +46,27 @@ public class FlashcardController : Controller
 
     // Crud operations
 
-    [HttpPost("create")]
-    public async Task<IActionResult> Create([FromBody] Flashcard newFlashcard)
+    [HttpPost("create/{id}")]
+    public async Task<IActionResult> Create(int id, [FromBody] Flashcard newFlashcard)
     {
         if (newFlashcard == null)
         {
             return BadRequest("Invalid Flashcard data");
         }
-        newFlashcard.CreationDate = DateTime.UtcNow;
+        newFlashcard.CreationDate = DateTime.Today;
+        newFlashcard.DeckId = id;
+
         bool returnOk = await _flashcardRepository.Create(newFlashcard);
 
         if (returnOk)
         {
-            //var response = new { success = true, message = "Flashcard created successfully" };
-            // return Ok(response);
-            return Ok(newFlashcard);
+            var response = new { success = true, message = "Flashcard created successfully" };
+            return Ok(response);
         }
         else
         {
-            // var response = new { success = false, message = "Flashcard creation failed" };
-            // return Ok(response);
-            return BadRequest("Flashcard creation failed");
+            var response = new { success = false, message = "Flashcard creation failed" };
+            return Ok(response);
         }
     }
 
@@ -83,24 +83,24 @@ public class FlashcardController : Controller
     }
 
     [HttpPut("update/{id}")]
-    public async Task<IActionResult> Update([FromBody] Flashcard newFlashcard)
+    public async Task<IActionResult> Update(Flashcard updatedFlashcard)
     {
-        if (newFlashcard == null)
+        if (updatedFlashcard == null)
         {
             return BadRequest("Invalid Flashcard data");
         }
-        bool returnOk = await _flashcardRepository.Update(newFlashcard);
+
+        var returnOk = await _flashcardRepository.Update(updatedFlashcard);
+        
         if (returnOk)
         {
-            //var response = new { success = true, message = "Flashcard #" + newFlashcard.FlashcardId + " updated successfully" };
-            // return Ok(response);
-            return Ok(newFlashcard);
+            var response = new { success = true, message = "Flashcard #" + updatedFlashcard.FlashcardId + " updated successfully" };
+            return Ok(response);
         }
         else
         {
-            //var response = new { success = false, message = "Flashcard update failed" };
-            //return Ok(response);
-            return BadRequest("Flashcard update failed");
+            var response = new { success = false, message = "Flashcard update failed" };
+            return Ok(response);
         }
     }
 

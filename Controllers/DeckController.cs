@@ -32,9 +32,10 @@ public class DeckController : Controller
 
 
     [HttpGet("byfolder/{id}")]
-    public async Task<IActionResult> GetAllByDeckId(int folderId)
+    public async Task<IActionResult> GetAllByDeckId(int id)
     {
-        var Decks = await _deckRepository.GetDecksByFolderId(folderId);
+        var Decks = await _deckRepository.GetDecksByFolderId(id);
+
         if (Decks == null)
         {
             _logger.LogError("[DeckController] Deck list not found while executing _DeckRepository.GetAllByDeckId().");
@@ -53,7 +54,7 @@ public class DeckController : Controller
             return BadRequest("Invalid Deck data");
         }
 
-        newDeck.CreationDate = DateTime.UtcNow;
+        newDeck.CreationDate = DateTime.Today;
 
         bool returnOk = await _deckRepository.Create(newDeck);
 
@@ -71,15 +72,15 @@ public class DeckController : Controller
     }
 
     [HttpPost("create/{id}")]
-    public async Task<IActionResult> CreateInFolder(int folderId, [FromBody] Deck newDeck)
+    public async Task<IActionResult> CreateInFolder(int id, [FromBody] Deck newDeck)
     {
         if (newDeck == null)
         {
             return BadRequest("Invalid Deck data");
         }
 
-        newDeck.FolderId = folderId;
-        newDeck.CreationDate = DateTime.UtcNow;
+        newDeck.FolderId = id;
+        newDeck.CreationDate = DateTime.Today;
 
         bool returnOk = await _deckRepository.Create(newDeck);
 
@@ -123,7 +124,6 @@ public class DeckController : Controller
         {
             var response = new { success = true, message = "Deck #" + updatedDeck.DeckId + "updated successfully" };
             return Ok(response);
-            //return Ok(updatedDeck);
         }
         else
         {

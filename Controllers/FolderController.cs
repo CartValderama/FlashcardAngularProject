@@ -40,7 +40,7 @@ public class FolderController : Controller
             return BadRequest("Invalid folder data");
         }
 
-        newFolder.CreationDate = DateTime.UtcNow;
+        newFolder.CreationDate = DateTime.Now;
 
         bool returnOk = await _folderRepository.Create(newFolder); 
         
