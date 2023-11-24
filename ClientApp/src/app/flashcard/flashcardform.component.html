@@ -1,0 +1,16 @@
+<h2>{{isEditMode ? 'Update' : 'Create' }} flashcard</h2>
+
+<form [formGroup]="flashcardForm" (ngSubmit)="onSubmit()">
+  <div class="form-group">
+    <label for="flashcardName">Question: </label>
+    <input type="text" id="flashcardName" formControlName="flashcardName" class="form-control">
+  </div>
+  <div class="form-group">
+    <label for="flashcardDescription">Answer: </label>
+    <input type="text" id="flashcardDescription" formControlName="flashcardDescription" class="form-control">
+  </div>
+  <button class="btn btn-primary" type="submit" [disabled]="flashcardForm.invalid">
+    {{isEditMode ? 'Update' : 'Create'}} flashcard
+  </button>
+  <button class="btn-primary btn-secondary" (click)="backToFlashcards()">Cancel</button>
+</form>

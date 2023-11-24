@@ -1,0 +1,43 @@
+<h1 id="tableLabel">List of folders ({{viewTitle}} View)</h1>
+
+<button class="btn btn-primary" (click)="getFolders()">Get folders</button>
+
+<div class="row">
+  <div class="col-md-2">Filter by:</div>
+  <div class="col-md-4">
+    <input type="text" [(ngModel)] ="listFilter"/>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <h4>Filtered by: {{listFilter}}</h4>
+  </div>
+</div>
+
+<button class="btn btn-primary" (click)="navigateToFolderform()">Create new folder</button>
+<button class="btn btn-secondary" [routerLink]="['/folderform', 'create', -1]">Create new folder (routerlink)</button>
+
+<table class="table table-striped" aria-labelledby="tableLabel">
+  <thead>
+    <tr>
+      <th>Folder id</th>
+      <th>Folder name</th>
+      <th>Folder description</th>
+      <th>Folder creation date</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let folder of filteredFolders">
+      <td>{{folder.FolderId}}</td>
+      <td>{{folder.FolderName}}</td>
+      <td>{{folder.FolderDescription}}</td>
+      <td>{{folder.CreationDate}}</td>
+      <td>
+        <a [routerLink]="['/folderform', 'edit', folder.FolderId]">Update</a>
+        <a class="delete-link" (click)="deleteFolder(folder)">Delete</a>
+      </td>
+    </tr>
+  </tbody>
+</table>

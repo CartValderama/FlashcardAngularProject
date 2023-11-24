@@ -1,0 +1,16 @@
+<h2>{{isEditMode ? 'Update' : 'Create' }} deck</h2>
+
+<form [formGroup]="deckForm" (ngSubmit)="onSubmit()">
+  <div class="form-group">
+    <label for="deckName">Deck Name:</label>
+    <input type="text" id="deckName" formControlName="deckName" class="form-control">
+  </div>
+  <div class="form-group">
+    <label for="deckDescription">Deck Description:</label>
+    <input type="text" id="deckDescription" formControlName="deckDescription" class="form-control">
+  </div>
+  <button class="btn btn-primary" type="submit" [disabled]="deckForm.invalid">
+    {{isEditMode ? 'Update' : 'Create'}} deck
+  </button>
+  <button class="btn-primary btn-secondary" (click)="backToDecks()">Cancel</button>
+</form>
