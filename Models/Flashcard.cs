@@ -10,16 +10,18 @@ public class Flashcard
     public int FlashcardId { get; set; }
 
     [JsonPropertyName("Question")]
-    [StringLength(90)]
+    [StringLength(120)]
     public string Question { get; set; } = string.Empty;
 
     [JsonPropertyName("Answer")]
-    [StringLength(90)]
+    [StringLength(120)]
     public string Answer { get; set; } = string.Empty;
 
     [JsonPropertyName("CreationDate")]
-    public DateTime CreationDate { get; set; } = DateTime.UtcNow;
-    public int DeckId { get; set; }
+    public DateTime CreationDate { get; set; } = DateTime.Today;
+
+    [JsonPropertyName("DeckId")]
+    public int? DeckId { get; set; }
     // navigation property
     //public virtual Deck? Deck { get; set; }
 }

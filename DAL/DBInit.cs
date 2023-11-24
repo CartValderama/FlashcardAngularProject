@@ -147,8 +147,8 @@ public class DBInit
 
             var folder2 = new Folder
             {
-                FolderName = "Empty demo folder",
-                FolderDescription = "This is just an empty demo folder to show how it would look like if the fodler was empty"
+                FolderName = "DemoFolder2",
+                FolderDescription = "This is just an empty demo folder to show how it would look like if the folder was empty"
             };
             context.AddRange(folder1, folder2);
             context.SaveChanges();

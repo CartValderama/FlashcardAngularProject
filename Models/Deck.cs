@@ -20,7 +20,7 @@ public class Deck
     public string? DeckDescription { get; set; }
 
     [JsonPropertyName("CreationDate")]
-    public DateTime CreationDate { get; set; } = DateTime.UtcNow;
+    public DateTime CreationDate { get; set; } = DateTime.Today;
 
     [JsonPropertyName("FolderId")]
     [DisplayName("Select Folder")]

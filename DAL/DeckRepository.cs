@@ -62,7 +62,7 @@ public class DeckRepository : IDeckRepository
     {
         try
         {
-            deck.CreationDate = DateTime.Now; // sets the folder's creationdate to the current date and time
+            deck.CreationDate = DateTime.Today; // sets the folder's creationdate to the current date and time
 
             // the decks are added to the DbSet "Decks" and then the changes are saved 
             _db.Decks.Add(deck);

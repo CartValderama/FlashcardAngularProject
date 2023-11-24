@@ -19,6 +19,7 @@ public class FlashcardRepository : IFlashcardRepository
     {
         try
         {
+
             return await _db.Flashcards.ToListAsync(); // fetch all flashcards and returns if successful
         }
         catch (Exception e)
@@ -72,7 +73,7 @@ public class FlashcardRepository : IFlashcardRepository
         }
         catch (Exception e)
         {
-            _logger.LogError("ERror creating flashcard: {ErrorMessage}", e.Message);
+            _logger.LogError("Error creating flashcard: {ErrorMessage}", e.Message);
             return false;
         }
     }
