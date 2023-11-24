@@ -1,6 +1,7 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { FormGroup, FormControl, Validators, FormBuilder, ReactiveFormsModule } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
+import { IFlashcard } from "../models/flashcard";
 import { FlashcardService } from "../services/flashcard.service";
 
 @Component({
@@ -8,42 +9,53 @@ import { FlashcardService } from "../services/flashcard.service";
   templateUrl: "./flashcardform.component.html"
 })
 
-export class FlashcardformComponent {
+export class FlashcardformComponent implements OnInit {
   flashcardForm: FormGroup;
   isEditMode: boolean = false;
   flashcardId: number = -1;
-
+  deckId: number = -1;
+  flashcard: IFlashcard = {
+    FlashcardId: 0,
+    Question: "",
+    Answer: "",
+    CreationDate: "",
+    DeckId: 0
+  }
   constructor(
     private _formbuilder: FormBuilder,
     private _router: Router,
     private _route: ActivatedRoute,
-    private _flashcardService: FlashcardService)
-  {
+    private _flashcardService: FlashcardService) {
     this.flashcardForm = _formbuilder.group({
-      Question: ["", [
+      question: ["", [
         Validators.required,
-        Validators.maxLength(90)
+        Validators.maxLength(120)
       ]],
-      Answer: ["", [
+      answer: ["", [
         Validators.required,
-        Validators.maxLength(90)
+        Validators.maxLength(120)
       ]],
+      deckId: null
     })
   }
 
+  getDeckId(): void {
+    this._flashcardService.getFlashcardById(this.flashcardId)
+      .subscribe(data => {
+        this.flashcard = data;
+        this.deckId = this.flashcard.DeckId;
+      })
+  }
+
   onSubmit() {
-    console.log("FlashcardCreate form submitted:");
-    console.log(this.flashcardForm);
-    console.log("The flashcard " + this.flashcardForm.value.flashcardName + " is created.");
-    console.log(this.flashcardForm.touched);
     const newFlashcard = this.flashcardForm.value;
-    const createUrl = "api/item/create";
+    newFlashcard.deckId = this.deckId;
     if (this.isEditMode) {
       this._flashcardService.updateFlashcard(this.flashcardId, newFlashcard)
         .subscribe(response => {
           if (response.success) {
-            console.log(response.message);
-            this._router.navigate(["/flashcard"]);
+
+            this._router.navigate(["/deck/" + this.deckId]);
           }
           else {
             console.log("Flashcard update failed");
@@ -51,48 +63,80 @@ export class FlashcardformComponent {
         })
     }
     else {
-      this._flashcardService.createFlashcard(newFlashcard)
-        .subscribe(response => {
-          if (response.success) {
-            console.log(response.message);
-            this._router.navigate(["/flashcard"]);
-          }
-          else {
-            console.log("Flashcard creation failed");
-          }
-        });
+      this._flashcardService.createFlashcard(this.deckId, newFlashcard)
+          .subscribe(response => {
+            if (response.success) {
+              this._router.navigate(["/deck/" + this.deckId]);
+            }
+            else {
+              console.log("Flashcard creation failed");
+            }
+          });
     };
   }
 
   backToFlashcards() {
-    this._router.navigate(["/flashcard"]);
+    this._router.navigate(["/deck/" + this.deckId]);
   }
 
   ngOnInit(): void {
     this._route.params.subscribe(params => {
       if (params["mode"] === "create") {
+        this.deckId = params["id"];
         this.isEditMode = false; // Create mode
-      } else if (params["mode"] === "edit") {
+      } else if (params["mode"] === "update") {
+        this.flashcardId = params["id"];
         this.isEditMode = true; // Edit mode
-        this.flashcardId = +params["id"];
-        this.loadItemForEdit(this.flashcardId);
+        this.loadItemForEdit(params["id"]);
+        this.getDeckId();
       }
     });
+    this.validationFlashcard();
+
   }
 
   loadItemForEdit(flashcardId: number) {
     this._flashcardService.getFlashcardById(flashcardId)
       .subscribe(
         (flashcard: any) => {
-          console.log("retrived flashcard: ", flashcard);
           this.flashcardForm.patchValue({
-            flashcardName: flashcard.FlashcardName,
-            flashcardDescription: flashcard.FlashcardDescription
+            question: flashcard.Question,
+            answer: flashcard.Answer
           });
         },
         (error: any) => {
           console.error("Error loading flashcard for edit: ", error);
         }
       );
+  }
+
+  validationFlashcard() {
+    const question: HTMLInputElement | null = document.getElementById("question") as HTMLInputElement;
+    const answer: HTMLInputElement | null = document.getElementById("answer") as HTMLInputElement;
+
+    const validationQuestion: HTMLElement | null = document.getElementById("validationQuestion");
+    const validationAnswer: HTMLElement | null = document.getElementById("validationAnswer");
+
+    if (validationQuestion) {
+      validationQuestion.style.display = "none";
+    }
+
+    if (validationAnswer) {
+      validationAnswer.style.display = "none";
+    }
+
+    if (validationQuestion && question && validationAnswer && answer) {
+      question.addEventListener("input", () => {
+        validationQuestion.style.display = "block"
+      });
+      answer.addEventListener("input", () => {
+        validationAnswer.style.display = "block"
+      })
+
+      setTimeout(() => {
+        validationAnswer.style.display = "block";
+        validationQuestion.style.display = "block";
+      }, 10000);
+    }
   }
 }

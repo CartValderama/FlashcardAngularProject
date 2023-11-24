@@ -1,74 +1,104 @@
 import { Component, OnInit } from "@angular/core";
-import { IFolder } from "../models/folder";
-import { HttpClient } from "@angular/common/http";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { FolderService } from "../services/folder.service";
+import { DeckService } from "../services/deck.service";
+import { IFolder } from "../models/folder";
+import { IDeck } from "../models/deck";
+
 
 @Component({
   selector: "app-folder-component",
   templateUrl: "./folder.component.html"
 })
 
-export class FolderComponent implements OnInit{
+export class FolderComponent implements OnInit {
   viewTitle: string = "Table";
   private _listFilter: string = "";
   folders: IFolder[] = [];
+  decks: IDeck[] = [];
+  folder: IFolder = {
+    FolderId: 0,
+    FolderName: "",
+    CreationDate: ""
+  };
+
 
   // injecting the HttpClient service into the component
   constructor(
     private _router: Router,
-  private _folderService: FolderService) {}
+    private _folderService: FolderService,
+    private _deckService: DeckService,
+    private _route: ActivatedRoute) { }
 
-  get listFilter() {
+  get listFilter(): string {
     return this._listFilter;
   }
   set listFilter(value: string) {
     this._listFilter = value;
-    console.log("In setter: ", value);
-    this.filteredFolders = this.performFilter(value);
+    this.filteredDecks = this.performFilterDeck(value);
   }
 
-  deleteFolder(folder: IFolder): void {
-    const confirmDelete = confirm(`Are you sure you want to delete folder #${folder.FolderId}?`);
+  // Function to update the CreationDate attribute to store only the date part
+  updateCreationDateDeck(deck: IDeck): IDeck {
+    const datePart = deck.CreationDate.split('T')[0];
+    deck.CreationDate = datePart;
+    return deck;
+  }
 
-    if (confirmDelete) {
-      this._folderService.deleteItem(folder.FolderId)
-        .subscribe(response => {
+  updateCreationDateFolder(folder: IFolder): IFolder {
+    const datePart = folder.CreationDate.split('T')[0];
+    folder.CreationDate = datePart;
+    return folder;
+  }
+
+  deleteFolder(): void {
+    this._folderService.deleteItem(this.folder.FolderId)
+      .subscribe({
+        next: (response: any) => {
           if (response.success) {
             console.log(response.message);
-            this.filteredFolders = this.filteredFolders.filter(f => f !== folder);
+            this._router.navigate(["/library"]);
           }
         },
-          (error) => {
-            console.log("Error deleting item:", error);
-          });
-    }
-  }
-
-  getFolders(): void {
-    // call to the server with the url "api/item/", expected return type is an IFolder array. This is also an observable return by the get
-    this._folderService.getFolders()
-      .subscribe(data => { // subscribe() used to receive the data when the response is received 
-        console.log("All", JSON.stringify(data));
-        this.folders = data;
-        this.filteredFolders = this.folders;
+        error: (error: any) => {
+          console.log("Error deleting item:", error);
+        }
       });
   }
 
-  filteredFolders: IFolder[] = this.folders;
-  performFilter(filterBy: string): IFolder[] {
-    filterBy = filterBy.toLocaleLowerCase();
-    return this.folders.filter((folder: IFolder) =>
-      folder.FolderName.toLocaleLowerCase().includes(filterBy));
+  getFolder(folderId: number): void {
+    this._folderService.getFolderById(folderId)
+      .subscribe(data => {
+        console.log(data)
+        this.folder = data;
+        this.updateCreationDateFolder(this.folder)
+      })
   }
 
-  navigateToFolderform() {
-    this._router.navigate(["/folderform"]);
+  getDecks(folderId: number): void {
+    // call to the server with the url "api/item/", expected return type is an IFolder array. This is also an observable return by the get
+    this._deckService.getDecksByFolderId(folderId)
+      .subscribe(data => { // subscribe() used to receive the data when the response is received
+        this.decks = data;
+        this.filteredDecks = this.decks;
+        this.decks.forEach(deck => {
+          this.updateCreationDateDeck(deck)
+        })
+      });
+  }
+
+  filteredDecks: IDeck[] = [];
+  performFilterDeck(filterBy: string): IDeck[] {
+    filterBy = filterBy.toLocaleLowerCase();
+    return this.decks.filter((deck: IDeck) =>
+      deck.DeckName.toLocaleLowerCase().includes(filterBy));
   }
 
   ngOnInit(): void {
-    console.log("FolderComponent created");
-    this.getFolders();
-    console.log("getFolders() called from oninit!")
+    this._route.params.subscribe(params => {
+      const id = this.folder.FolderId = + params["id"]
+      this.getFolder(id);
+      this.getDecks(id);
+    })
   }
 }

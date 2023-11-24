@@ -24,25 +24,20 @@ export class FolderformComponent {
         Validators.required,
         Validators.minLength(2),
         Validators.maxLength(15),
-        Validators.pattern(/[0-9a-zA-ZæøåÆØÅ. \-]{2,15}/)
+        Validators.pattern(/^[0-9a-zA-ZæøåÆØÅ. -]{2,15}$/)
       ]],
       folderDescription: ["", [Validators.maxLength(150)]],
     })
   }
 
   onSubmit() {
-    console.log("FolderCreate form submitted:");
-    console.log(this.folderForm);
-    console.log("The folder " + this.folderForm.value.folderName + " is created.");
-    console.log(this.folderForm.touched);
     const newFolder = this.folderForm.value;
-    const createUrl = "api/item/create";
     if (this.isEditMode) {
       this._folderService.updateFolder(this.folderId, newFolder)
         .subscribe(response => {
           if (response.success) {
-            console.log(response.message);
-            this._router.navigate(["/folder"]);
+            console.log(this.folderId)
+            this._router.navigate(["/folder/" + this.folderId]);
           }
           else {
             console.log("Folder update failed");
@@ -54,7 +49,7 @@ export class FolderformComponent {
         .subscribe(response => {
           if (response.success) {
             console.log(response.message);
-            this._router.navigate(["/folder"]);
+            this._router.navigate(["/library"]);
           }
           else {
             console.log("Folder creation failed");
@@ -64,19 +59,26 @@ export class FolderformComponent {
   }
 
   backToFolders() {
-    this._router.navigate(["/folder"]);
+    if (this.isEditMode) {
+      this._router.navigate(["/folder/" + this.folderId]);
+    } else {
+      this._router.navigate(["/library"]);
+    }
   }
 
   ngOnInit(): void {
     this._route.params.subscribe(params => {
       if (params["mode"] === "create") {
         this.isEditMode = false; // Create mode
-      } else if (params["mode"] === "edit") {
+      } else if (params["mode"] === "update") {
         this.isEditMode = true; // Edit mode
-        this.folderId = +params["id"];
+        console.log(params["id"]);
+        this.folderId =+ params["id"];
+        console.log(this.folderId);
         this.loadItemForEdit(this.folderId);
       }
     });
+    this.validationFolder();
   }
 
   loadItemForEdit(folderId: number) {
@@ -93,5 +95,22 @@ export class FolderformComponent {
           console.error("Error loading folder for edit: ", error);
         }
       );
+  }
+
+  validationFolder() {
+    const myInput: HTMLInputElement | null = document.getElementById("folderName") as HTMLInputElement;
+    const validatationFolder: HTMLElement | null = document.getElementById("validatationFolder");
+    if (validatationFolder) {
+      validatationFolder.style.display = "none";
+    }
+
+    if (myInput && validatationFolder) {
+      myInput.addEventListener("input", () => {
+        validatationFolder.style.display = "block"
+      });
+      setTimeout(() => {
+        validatationFolder.style.display = "block";
+      }, 10000);
+    }
   }
 }

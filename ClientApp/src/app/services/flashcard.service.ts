@@ -17,7 +17,7 @@ export class FlashcardService {
   }
 
   getFlashcardsByDeckId(deckId: number): Observable<IFlashcard[]> {
-    const url = `${this.baseUrl}/bydeck${deckId}`;
+    const url = `${this.baseUrl}/bydeck/${deckId}`;
     return this._http.get<IFlashcard[]>(url);
   }
 
@@ -26,15 +26,8 @@ export class FlashcardService {
     return this._http.get(url);
   }
 
-  createFlashcard(newFlashcard: IFlashcard): Observable<any> {
-    newFlashcard.DeckId = 1; // all flashcards are stored in deck#1 until routings are sorted
-    const createUrl = `${this.baseUrl}/create`;
-    return this._http.post<any>(createUrl, newFlashcard);
-  }
-
-  createFlashcardInDeck(deckId: number, newFlashcard: IFlashcard): Observable<any> {
-    const tempDeckId = 1; // all flashcards are stored in deck#1 until routings are sorted
-    deckId = tempDeckId;
+  createFlashcard(deckId: number, newFlashcard: IFlashcard): Observable<any> {
+    // all flashcards are stored in deck#1 until routings are sorted
     const createUrl = `${this.baseUrl}/create/${deckId}`;
     return this._http.post<any>(createUrl, newFlashcard);
   }

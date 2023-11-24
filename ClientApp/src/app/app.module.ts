@@ -7,8 +7,8 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
-import { CounterComponent } from './counter/counter.component';
-import { FetchDataComponent } from './fetch-data/fetch-data.component';
+import { LibraryComponent } from './library/library.component';
+import { AboutusComponent } from './about/aboutus.component';
 
 import { FolderComponent } from "./folder/folder.component";
 import { FolderformComponent } from "./folder/folderform.component";
@@ -16,7 +16,9 @@ import { FolderformComponent } from "./folder/folderform.component";
 import { DeckComponent } from "./deck/deck.component"; 
 import { DeckformComponent } from "./deck/deckform.component";
 
-import { FlashcardComponent } from "./flashcard/flashcard.component";
+import { FlashcardoneComponent } from "./flashcard/flashcardone.component";
+import { FlashcardtwoComponent } from "./flashcard/flashcardtwo.component";
+import { FlashcardthreeComponent } from "./flashcard/flashcardthree.component";
 import { FlashcardformComponent } from "./flashcard/flashcardform.component";
 
 @NgModule({
@@ -24,14 +26,16 @@ import { FlashcardformComponent } from "./flashcard/flashcardform.component";
     AppComponent,
     NavMenuComponent,
     HomeComponent,
-    CounterComponent,
-    FetchDataComponent,
+    LibraryComponent,
+    AboutusComponent,
     FolderComponent,
     FolderformComponent,
     DeckComponent,
     DeckformComponent,
-    FlashcardComponent,
-    FlashcardformComponent
+    FlashcardoneComponent,
+    FlashcardtwoComponent,
+    FlashcardthreeComponent,
+    FlashcardformComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -40,16 +44,15 @@ import { FlashcardformComponent } from "./flashcard/flashcardform.component";
     ReactiveFormsModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'counter', component: CounterComponent },
-      { path: 'fetch-data', component: FetchDataComponent },
-      { path: "folder", component: FolderComponent },
-      { path: "folderform", component: FolderformComponent },
+      { path: "about", component: AboutusComponent },
+      { path: "library", component: LibraryComponent },
+      { path: "folder/:id", component: FolderComponent },
       { path: "folderform/:mode/:id", component: FolderformComponent },
-      { path: "deck", component: DeckComponent },
-      { path: "deckform", component: DeckformComponent },
+      { path: "deck/:id", component: DeckComponent },
       { path: "deckform/:mode/:id", component: DeckformComponent },
-      { path: "flashcard", component: FlashcardComponent },
-      { path: "flashcardform", component: FlashcardformComponent },
+      { path: "flashcardone/:id", component: FlashcardoneComponent },
+      { path: "flashcardtwo/:id", component: FlashcardtwoComponent },
+      { path: "flashcardthree/:id", component: FlashcardthreeComponent },
       { path: "flashcardform/:mode/:id", component: FlashcardformComponent },
       {path: "**", redirectTo: "", pathMatch: "full"}
     ])

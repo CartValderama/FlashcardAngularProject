@@ -17,7 +17,7 @@ export class DeckService {
   }
 
   getDecksByFolderId(folderId: number): Observable<IDeck[]> {
-    const url = `${this.baseUrl}/byfolder${folderId}`;
+    const url = `${this.baseUrl}/byfolder/${folderId}`;
     return this._http.get<IDeck[]>(url);
   }
 
